@@ -72,10 +72,12 @@ public class Grid<TGridObject>
         return new Vector3(x, y) * cellSize + originPosition;
     }
 
-    private void getXY(Vector3 worldPosition, out int x, out int y)
+    public void getXY(Vector3 worldPosition, out int x, out int y)
     {
+        //Debug.Log("first " + x + " " + y);
         x = Mathf.FloorToInt((worldPosition - originPosition).x / cellSize);
         y = Mathf.FloorToInt((worldPosition - originPosition).y / cellSize);
+        //Debug.Log(x + " " + y);
     }
 
     public void setGridObject(int x, int y, TGridObject value)
@@ -122,7 +124,8 @@ public class Grid<TGridObject>
     public TGridObject getNode(Vector3 worldPosition)
     {
         int x, y;
-        getXY(worldPosition, out x, out y);
+        getXY(worldPosition*cellSize, out x, out y);
+        //Debug.Log("x. " + x + " y. " + y);
         return getGridObject(x, y);
     }
 

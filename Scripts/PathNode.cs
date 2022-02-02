@@ -32,4 +32,9 @@ public class PathNode
         fCost = gCost + hCost;
     }
 
+    public Vector3 toVector()
+    {
+        return new Vector3(x, y, 0);
+    }
+
 }

@@ -13,12 +13,12 @@ public class Pathfinding
     private Grid<PathNode> grid;
     private List<PathNode> openList;
     private List<PathNode> closedList;
-    public Pathfinding(int width, int height)
+    public Pathfinding(int width, int height, int offset)
     {
-        grid = new Grid<PathNode>(width, height, 10f, Vector3.zero, (Grid<PathNode> g, int x, int y) => new PathNode(g, x, y));
+        grid = new Grid<PathNode>(width, height, 10f, new Vector3(0, 0, 0), (Grid<PathNode> g, int x, int y) => new PathNode(g, x, y));
     }
 
-    private List<PathNode> FindPath(int startX, int startY, int endX, int endY)
+    public List<PathNode> FindPath(int startX, int startY, int endX, int endY)
     {
         PathNode startNode = grid.getGridObject(startX, startY);
         PathNode endNode = grid.getGridObject(endX, endY);
@@ -130,16 +130,21 @@ public class Pathfinding
         return MOVE_DIAGONAL_COST * Mathf.Min(xDistance, yDistance) + MOVE_STRAIGHT_COST * remaining;
     }
 
-    private PathNode getLowestCostNode(List<PathNode> pathNodeList)
+    public PathNode getLowestCostNode(List<PathNode> pathNodeList)
     {
         PathNode lowestFCostNode = pathNodeList[0];
-        for(int i = 1; i < pathNodeList.Count; i++)
+        for (int i = 1; i < pathNodeList.Count; i++)
         {
-            if(pathNodeList[i].fCost < lowestFCostNode.fCost)
+            if (pathNodeList[i].fCost < lowestFCostNode.fCost)
             {
                 lowestFCostNode = pathNodeList[i];
             }
         }
         return lowestFCostNode;
+    }
+
+    public Grid<PathNode> getGrid()
+    {
+        return grid;
     }
 }

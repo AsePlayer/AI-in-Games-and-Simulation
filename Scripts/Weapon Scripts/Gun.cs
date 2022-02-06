@@ -2,6 +2,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * This script serves as a general-purpose Gun module that can be added to any Object.
+ * They will gain the ability to choose a muzzle flash, request Ammo to shoot, and request Ammo to reload.
+ * This is where the bullet spawning occurs.
+ */
+
 public class Gun : MonoBehaviour
 {
     [SerializeField]
@@ -11,10 +17,8 @@ public class Gun : MonoBehaviour
     [SerializeField]
     protected float weaponCooldown = 0.5f;
 
-    public GameObject muzzleflash;
-
     private GameObject ammo;
-
+    public GameObject muzzleflash;
 
     void Awake()
     {
@@ -33,11 +37,14 @@ public class Gun : MonoBehaviour
         if (ammo == null)
             return;
 
+        // Ammo? Shoot.
+        // TODO: make this work with gun cooldown
         if (ammo.shoot())
         {
+            muzzleflash.SetActive(true);
+
             // Spawns bullet where player is facing.
             Bullet bullet = ammo.getBullet();
-            muzzleflash.SetActive(true);
             GameObject bulleto = Instantiate(bullet.gameObject, gunEndPointPosition, Quaternion.Euler(new Vector3(0, 0, angle)));
             bulleto.GetComponent<Rigidbody2D>().AddForce(aimDirection * bullet.speed);
             bulleto.GetComponent<Bullet>().owner = gameObject;

@@ -17,7 +17,6 @@ public class PlayerController2 : MonoBehaviour
     public Rigidbody2D rg;
     Vector2 movement;
 
-    // Changed from Update to FixedUpdate. Inconsistent speed depending on window size with just Update -Ryan
     public void FixedUpdate()
     {
         // Use GetRawAxis for Keyboards to get snappy movement. GetAxis is floaty and smooth because it is meant for controllers or something with "sensitivity".
@@ -27,14 +26,7 @@ public class PlayerController2 : MonoBehaviour
         float verticalInput = Input.GetAxisRaw("Vertical");
 
         Vector2 movement = new Vector3(horizontalInput, verticalInput, 0).normalized;
-
-        /*
-         * (This is now handled in unitMovement.move()
-         * rg.velocity = movement;
-         */
         unitMovement.move(rg, movement);
     }
-
-
 
 }

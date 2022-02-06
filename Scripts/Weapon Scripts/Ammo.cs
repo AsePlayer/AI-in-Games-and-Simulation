@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * This script serves as a general-purpose Ammo module that can be added to any Object.
+ * They will gain the ability to track ammo, trigger shot for gun, and reload.
+ */
+
 public class Ammo : MonoBehaviour
 {
     [SerializeField]
@@ -16,12 +21,11 @@ public class Ammo : MonoBehaviour
 
     GameObject gun;
     bool isReloading;
-    // Start is called before the first frame update
+
     void Awake()
     {
         ammoInMag = magCapacity;
         gun = GameObject.Find("Gun");
-
     }
 
     public bool shoot()
@@ -52,14 +56,17 @@ public class Ammo : MonoBehaviour
         if (ammoInMag <= 0)
             startReload();
 
+        // Passed all the guards. Return true for shot.
         return true;
     }
 
     public void startReload()
     {
+        // No ammo left? No reload.
         if (ammoCapacity <= 0)
             return;
 
+        // Full ammo? No reload.
         if (ammoInMag == magCapacity)
             return;
            
@@ -74,14 +81,15 @@ public class Ammo : MonoBehaviour
 
     IEnumerator reload()
     {
+        // Start reloading
         isReloading = true;
         
         // Rollover excess reload ammo because we're nice :)
         int ammoToTakeFromCapacity = magCapacity - ammoInMag;
 
-        // If you need to reload more than you have left, reload everything you have left.
-        bool fullReload;
 
+        bool fullReload;
+        // If you need to reload more than you have left, reload everything you have left.
         if (ammoCapacity < ammoToTakeFromCapacity)
         {
             ammoToTakeFromCapacity = ammoCapacity;
@@ -104,6 +112,7 @@ public class Ammo : MonoBehaviour
         // Subtract ammo
         ammoCapacity -= ammoToTakeFromCapacity;
 
+        // End reloading
         isReloading = false; ;
     }
 }

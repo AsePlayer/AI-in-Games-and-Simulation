@@ -9,18 +9,11 @@ public class PlayerAimWeapon : MonoBehaviour
     private Transform aimGunEndPointTransform;
     private GameObject gun;
 
-    //public MeshRenderer shootingAnimation;
-    //public AnimatedTexture animatedTexture;
-    //public GameObject muzzleflash;
-
-    //public GameObject bullet;
-
     private void Awake()
     {
         aimTransform = transform.Find("Aim");
-        aimGunEndPointTransform = aimTransform.Find("GunEndPointPosition");
         gun = GameObject.Find("Gun");
-        //shootingAnimation.enabled = false;
+        aimGunEndPointTransform = aimTransform.Find("GunEndPointPosition");
     }
 
     private void Update()
@@ -45,7 +38,6 @@ public class PlayerAimWeapon : MonoBehaviour
         if(Input.GetMouseButtonDown(0))
         {
             Vector3 mousePosition = getMouseWorldPosition();
-            //muzzleflash.SetActive(true);
 
             Vector3 gunEndPointPosition = aimGunEndPointTransform.position;
             Vector3 shootPosition = mousePosition;
@@ -55,6 +47,7 @@ public class PlayerAimWeapon : MonoBehaviour
             // Getting Euler Angle (we want a fixed x and y coordinate system, with the z-axis being the only one rotating for 2D).
             float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg; //Source: https://youtu.be/fuGQFdhSPg4?t=275
 
+            // If gun is not null, shoot.
             var ourGun = gun.GetComponent<Gun>();
             if (ourGun != null)
                 ourGun.GetComponent<Gun>().shoot(gunEndPointPosition, angle, aimDirection);
@@ -63,6 +56,7 @@ public class PlayerAimWeapon : MonoBehaviour
 
     private void handleReloading()
     {
+        // Request manual reload if R is pressed.
         if(Input.GetKeyDown(KeyCode.R))
         {
             var ourGun = gun.GetComponent<Gun>();
@@ -70,6 +64,8 @@ public class PlayerAimWeapon : MonoBehaviour
         }
     }
 
+
+    // Helper functions
     public static Vector3 getMouseWorldPosition()
     {
         Vector3 vec = getMouseWorldPositionWithZ(Input.mousePosition, Camera.main);

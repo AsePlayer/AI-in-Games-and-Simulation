@@ -2,11 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+/*
+ * This script serves as a general-purpose Health module that can be added to any Object.
+ * They will gain the ability to takeDamage and die, and bullets will be causing damages.
+ */
+
 public class Health : MonoBehaviour
 {
     [SerializeField]
     protected int startingHealth = 100;
-
     private int health;
 
     // Optimize with pooling system later

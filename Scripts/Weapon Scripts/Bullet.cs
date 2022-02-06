@@ -2,6 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
+ * This script serves as a general-purpose Bullet module that can be added to any projectile Object.
+ * The bullet will gain the ability to despawn after a certain amount of time, get destroyed when colliding with objects, and ignore holes/owner collision.
+ */
+
 public class Bullet : MonoBehaviour
 {
     public GameObject owner;
@@ -19,7 +24,6 @@ public class Bullet : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
         rb = GetComponent<Rigidbody2D>();
         timer = 0;
     }
@@ -27,9 +31,7 @@ public class Bullet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
         timer += Time.deltaTime;
-        //rb.AddForce(transform.up * 5f);
         if (timer >= 2f)
         {
             Destroy(gameObject);
@@ -52,13 +54,10 @@ public class Bullet : MonoBehaviour
     void OnEnable()
     {
         // Bullets will ignore Hole collision while Holes still maintain their physical blocking abilities for Units.
-
         GameObject[] holes = GameObject.FindGameObjectsWithTag("Hole");
-
         foreach (GameObject hole in holes)
         {
             Physics2D.IgnoreCollision(hole.GetComponent<Collider2D>(), GetComponent<Collider2D>());
         }
-        // TODO: bullet inflicts damage
     }
 }

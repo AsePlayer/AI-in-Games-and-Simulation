@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class Testing : MonoBehaviour
 {
-    private Pathfinding pathfinding;
+    private PathfindingOld pathfinding;
     private void Start()
     {
-        pathfinding = new Pathfinding(10, 10, -50);
+        pathfinding = new PathfindingOld(10, 10, -50);
     }
 
     private void Update()

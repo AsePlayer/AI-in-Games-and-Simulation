@@ -7,7 +7,7 @@ using UnityEngine;
 public class EnemyAI : MonoBehaviour
 {
     private Vector3 startingPosition;
-    private Pathfinding pathfinding;
+    private PathfindingOld pathfinding;
     List<PathNode> path;
 
     public int speed;
@@ -16,7 +16,7 @@ public class EnemyAI : MonoBehaviour
     private void Start()
     {
         startingPosition = transform.position;
-        pathfinding = new Pathfinding(10, 10, -50);
+        pathfinding = new PathfindingOld(10, 10, -50);
         
     }
 

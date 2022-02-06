@@ -7,13 +7,18 @@ public class PlayerAimWeapon : MonoBehaviour
 {
     private Transform aimTransform;
     private Transform aimGunEndPointTransform;
-    private GameObject gun;
+    
+    private GameObject gunObject;
+    private Gun gun;
 
     private void Awake()
     {
         aimTransform = transform.Find("Aim");
-        gun = GameObject.Find("Gun");
         aimGunEndPointTransform = aimTransform.Find("GunEndPointPosition");
+
+        // Cache gun information
+        gunObject = GameObject.Find("Gun");
+        gun = gunObject.GetComponent<Gun>();
     }
 
     private void Update()
@@ -48,9 +53,8 @@ public class PlayerAimWeapon : MonoBehaviour
             float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg; //Source: https://youtu.be/fuGQFdhSPg4?t=275
 
             // If gun is not null, shoot.
-            var ourGun = gun.GetComponent<Gun>();
-            if (ourGun != null)
-                ourGun.GetComponent<Gun>().shoot(gunEndPointPosition, angle, aimDirection);
+            if (gun != null)
+                gun.GetComponent<Gun>().shoot(gunEndPointPosition, angle, aimDirection);
         }
     }
 
@@ -59,8 +63,7 @@ public class PlayerAimWeapon : MonoBehaviour
         // Request manual reload if R is pressed.
         if(Input.GetKeyDown(KeyCode.R))
         {
-            var ourGun = gun.GetComponent<Gun>();
-            ourGun.reload();
+            gun.reload();
         }
     }
 

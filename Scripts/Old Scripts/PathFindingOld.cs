@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 // Code from: https://youtu.be/alU04hvz6L4
-public class Pathfinding
+public class PathfindingOld
 {
     private const int MOVE_STRAIGHT_COST = 10;
     private const int MOVE_DIAGONAL_COST = 14;
@@ -13,7 +13,7 @@ public class Pathfinding
     private Grid<PathNode> grid;
     private List<PathNode> openList;
     private List<PathNode> closedList;
-    public Pathfinding(int width, int height, int offset)
+    public PathfindingOld(int width, int height, int offset)
     {
         grid = new Grid<PathNode>(width, height, 10f, new Vector3(0, 0, 0), (Grid<PathNode> g, int x, int y) => new PathNode(g, x, y));
     }

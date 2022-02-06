@@ -29,6 +29,10 @@ public class MapGrid : MonoBehaviour
 
     public void generate(int w, int h, int g)
     {
+        width = w;
+        height = h;
+        goals = g;
+
         Debug.Log(wall.GetComponent<MapCell>().id);
         grid = new GameObject[w, h];
 

@@ -8,49 +8,65 @@ using UnityEngine;
  * This is where the bullet spawning occurs.
  */
 
+[RequireComponent(typeof(Ammo))]
 public class Gun : MonoBehaviour
 {
-    [SerializeField]
-    protected string name;
-    [SerializeField]
-    protected float reloadTime = 5f;
-    [SerializeField]
-    protected float weaponCooldown = 0.5f;
+    [SerializeField] protected string name;
+    [SerializeField] protected float reloadTime = 5f;
+    [SerializeField] protected float weaponCooldown = 0.5f;
+    [SerializeField] protected GameObject muzzleflash;
+    [SerializeField] protected bool weaponOnCooldown;
 
-    private GameObject ammo;
-    public GameObject muzzleflash;
+    private Ammo ammo;
+    private Bullet bullet;
 
     void Awake()
     {
         // Disable muzzleflash initially until shot is fired.
-        muzzleflash = GameObject.Find("Muzzleflash");
         muzzleflash.SetActive(false);
 
-        ammo = GameObject.Find("Ammo");
+        // Cache information that will be accessed often.
+        ammo = this.GetComponent<Ammo>();
+        bullet = ammo.getBullet();
     }
+
+
+    public void reload()
+    {
+        ammo.startReload();
+    }
+
 
     public void shoot(Vector3 gunEndPointPosition, float angle, Vector3 aimDirection)
     {
-        var ammo = this.ammo.GetComponent<Ammo>();
-
         // No ammo? No shoot.
         if (ammo == null)
             return;
 
+        // On weapon cooldown? No Shoot.
+        if (weaponOnCooldown)
+            return;
+
         // Ammo? Shoot.
-        // TODO: make this work with gun cooldown
         if (ammo.shoot())
         {
             muzzleflash.SetActive(true);
 
             // Spawns bullet where player is facing.
-            Bullet bullet = ammo.getBullet();
-            GameObject bulleto = Instantiate(bullet.gameObject, gunEndPointPosition, Quaternion.Euler(new Vector3(0, 0, angle)));
-            bulleto.GetComponent<Rigidbody2D>().AddForce(aimDirection * bullet.speed);
-            bulleto.GetComponent<Bullet>().owner = gameObject;
+            GameObject bullet = Instantiate(this.bullet.gameObject, gunEndPointPosition, Quaternion.Euler(new Vector3(0, 0, angle)));
+            bullet.GetComponent<Rigidbody2D>().AddForce(aimDirection * this.bullet.speed);
+            bullet.GetComponent<Bullet>().owner = gameObject;
+
+            // Weapon cooldown in between shots
+            StartCoroutine(waitWeaponCooldown());
         }
 
     }
+
+
+    /*
+     * Getters
+     */
 
     public float getReloadTime()
     {
@@ -61,15 +77,20 @@ public class Gun : MonoBehaviour
     {
         return weaponCooldown;
     }
-
+    
     public Ammo getAmmo()
     {
-        return ammo.GetComponent<Ammo>();
+        return ammo;
     }
 
-    public void reload()
+    /*
+     * Courotines
+     */
+
+    public IEnumerator waitWeaponCooldown()
     {
-        var ammo = this.ammo.GetComponent<Ammo>();
-        ammo.startReload();
+        weaponOnCooldown = true;
+        yield return new WaitForSeconds(weaponCooldown);
+        weaponOnCooldown = false;
     }
 }

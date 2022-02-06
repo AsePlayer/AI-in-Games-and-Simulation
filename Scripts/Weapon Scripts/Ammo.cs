@@ -9,23 +9,17 @@ using UnityEngine;
 
 public class Ammo : MonoBehaviour
 {
-    [SerializeField]
-    Bullet bullet;
-
-    [SerializeField]
-    int ammoCapacity = 60;
-    [SerializeField]
-    int magCapacity = 10;
-    [SerializeField]
-    int ammoInMag;
-
-    GameObject gun;
-    bool isReloading;
+    [SerializeField] protected Gun gun;
+    [SerializeField] protected Bullet bullet;
+    [SerializeField] protected int ammoCapacity = 60;
+    [SerializeField] protected int magCapacity = 10;
+    [SerializeField] protected int ammoInMag;
+    [SerializeField] protected bool isReloading;
 
     void Awake()
     {
+        gun = this.GetComponent<Gun>();
         ammoInMag = magCapacity;
-        gun = GameObject.Find("Gun");
     }
 
     public bool shoot()
@@ -71,7 +65,6 @@ public class Ammo : MonoBehaviour
             return;
            
         StartCoroutine(reload());
-        
     }
 
     public Bullet getBullet()
@@ -87,9 +80,9 @@ public class Ammo : MonoBehaviour
         // Rollover excess reload ammo because we're nice :)
         int ammoToTakeFromCapacity = magCapacity - ammoInMag;
 
-
         bool fullReload;
-        // If you need to reload more than you have left, reload everything you have left.
+        // If you need to reload more than you have left, reload everything you have left. Mark fullReload as false.
+        // Otherwise, execute a full reload.
         if (ammoCapacity < ammoToTakeFromCapacity)
         {
             ammoToTakeFromCapacity = ammoCapacity;
@@ -101,7 +94,7 @@ public class Ammo : MonoBehaviour
         }
 
         // Wait to dispense ammo until reload time has elapsed.
-        yield return new WaitForSeconds(gun.GetComponent<Gun>().getReloadTime());
+        yield return new WaitForSeconds(gun.getReloadTime());
 
         // Handle reload according to ammo count.
         if (fullReload)
@@ -112,7 +105,7 @@ public class Ammo : MonoBehaviour
         // Subtract ammo
         ammoCapacity -= ammoToTakeFromCapacity;
 
-        // End reloading
+        // Reloading is complete
         isReloading = false; ;
     }
 }

@@ -2,8 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[RequireComponent(typeof(UnitMovement))]
 public class PlayerController2 : MonoBehaviour
 {
+
+    private UnitMovement unitMovement;
+
+    void Awake()
+    {
+        unitMovement = GetComponent<UnitMovement>();
+    }
 
     public float speed = 10;
     public Rigidbody2D rg;
@@ -18,11 +26,15 @@ public class PlayerController2 : MonoBehaviour
         float horizontalInput = Input.GetAxisRaw("Horizontal");
         float verticalInput = Input.GetAxisRaw("Vertical");
 
-        Vector2 movement = new Vector3(horizontalInput, verticalInput, 0);
-        movement = movement.normalized * speed * Time.deltaTime;
+        Vector2 movement = new Vector3(horizontalInput, verticalInput, 0).normalized;
 
-        //rg.MovePosition(rg.position + movement * speed * Time.fixedDeltaTime);
-        rg.velocity = movement;
+        /*
+         * (This is now handled in unitMovement.move()
+         * rg.velocity = movement;
+         */
+        unitMovement.move(rg, movement);
     }
+
+
 
 }

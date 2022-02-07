@@ -22,7 +22,7 @@ public class Ammo : MonoBehaviour
         ammoInMag = magCapacity;
     }
 
-    public bool shoot()
+    public bool shotPossible()
     {
         // No bullet? No shoot.
         if (bullet == null)
@@ -50,7 +50,7 @@ public class Ammo : MonoBehaviour
         if (ammoInMag <= 0)
             startReload();
 
-        // Passed all the guards. Return true for shot.
+        // Passed all the guards. Return true for shot possible.
         return true;
     }
 
@@ -106,6 +106,7 @@ public class Ammo : MonoBehaviour
         ammoCapacity -= ammoToTakeFromCapacity;
 
         // Reloading is complete
-        isReloading = false; ;
+        isReloading = false;
     }
+
 }

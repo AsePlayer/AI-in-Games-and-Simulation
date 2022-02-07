@@ -6,6 +6,8 @@ using UnityEngine;
  * This script serves as a general-purpose Gun module that can be added to any Object.
  * They will gain the ability to choose a muzzle flash, request Ammo to shoot, and request Ammo to reload.
  * This is where the bullet spawning occurs.
+ * 
+ * REQUIRES Ammo Component!
  */
 
 [RequireComponent(typeof(Ammo))]
@@ -14,8 +16,8 @@ public class Gun : MonoBehaviour
     [SerializeField] protected string name;
     [SerializeField] protected float reloadTime = 5f;
     [SerializeField] protected float weaponCooldown = 0.5f;
-    [SerializeField] protected GameObject muzzleflash;
     [SerializeField] protected bool weaponOnCooldown;
+    [SerializeField] protected GameObject muzzleflash;
 
     private Ammo ammo;
     private Bullet bullet;
@@ -48,7 +50,7 @@ public class Gun : MonoBehaviour
             return;
 
         // Ammo? Shoot.
-        if (ammo.shoot())
+        if (ammo.shotPossible())
         {
             muzzleflash.SetActive(true);
 

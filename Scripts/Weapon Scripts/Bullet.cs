@@ -40,14 +40,16 @@ public class Bullet : MonoBehaviour
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        Health health = collision.gameObject.GetComponent<Health>();
+        
         if (collision.gameObject.tag == "Wall")
         {
             Destroy(gameObject);
         }
-        else if(collision.gameObject.GetComponent<Health>() != null && collision.gameObject != owner)
+        else if (health != null && collision.gameObject != owner)
         {
             Destroy(gameObject);
-            collision.gameObject.GetComponent<Health>().takeDamage(damage);
+            health.takeDamage(damage);
         }
     }
 

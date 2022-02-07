@@ -10,6 +10,7 @@ public class RunnerScript : MonoBehaviour
     public GameObject player;
     public MapGrid map;
     public Transform playerSpot;
+    public GameObject runaway;
 
     private float scared;
     private List<int> scores;
@@ -55,10 +56,12 @@ public class RunnerScript : MonoBehaviour
                     randx = Random.Range(1, map.width - 2);
                     randy = Random.Range(1, map.height - 2);
                     tries++;
-                } while (Mathf.Abs(playerx - enemyx) > Mathf.Abs(playerx - randx) || Mathf.Abs(playery - enemyy) > Mathf.Abs(playery - randy) ||
-                !map.getCell(randx, randy).GetComponent<MapCell>().passable || tries >= 50);
+                } while ((Mathf.Abs(playerx - enemyx) > Mathf.Abs(playerx - randx) || Mathf.Abs(playery - enemyy) > Mathf.Abs(playery - randy) ||
+                !map.getCell(randx, randy).GetComponent<MapCell>().passable) && tries <= 50);
 
-                gameObject.GetComponent<AIDestinationSetter>().target = map.getCell(randx, randy).transform;
+                Debug.Log(randx + " " + randy);
+                runaway.transform.position = new Vector2(randx, randy);
+                gameObject.GetComponent<AIDestinationSetter>().target = runaway.transform;
                 scared = 1f;
             }
         }
@@ -77,7 +80,7 @@ public class RunnerScript : MonoBehaviour
             //Otherwise, farther distances score lower (100 - distance)
             //In line of sight of player outside 4 cells is very bad, score turns negative.
             float rayDist = Mathf.Sqrt((playerx - enemyx) * (playerx - enemyx) + (playery - enemyy) * (playery - enemyy));
-            if (rayDist <= 3)
+            if (rayDist <= 2)
             {
                 return 100;
             }
@@ -98,13 +101,14 @@ public class RunnerScript : MonoBehaviour
         {
             if (enemyTurn)
             {
-                //checks to see for optimal a* path first (much faster to compute)
+                //checks to see for optimal a* path or standstill first (much faster to compute)
                 if (gameObject.GetComponent<AIPath>().path.path.Count > depth + 1)
                 {
                     int nextx = (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.x - 37) / 1000;
                     int nexty = (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.y + 21) / 1000;
                     //Debug.Log((gameObject.GetComponent<AIPath>().path.path[depth + 1].position.x - 37) + " " + (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.y + 27));
                     //Debug.Log(nextx + " " + nexty);
+                    //return Mathf.Max(miniMaxList(playerx, playery, nextx, nexty, map, depth + 1, maxDepth, p, !enemyTurn), miniMaxList(playerx, playery, enemyx, enemyy, map, depth + 1, maxDepth, p, !enemyTurn));
                     return miniMaxList(playerx, playery, nextx, nexty, map, depth + 1, maxDepth, p, !enemyTurn);
                 }
                 else

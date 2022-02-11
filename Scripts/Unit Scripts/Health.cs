@@ -10,9 +10,8 @@ using UnityEngine;
 
 public class Health : MonoBehaviour
 {
-    [SerializeField]
-    protected int startingHealth = 100;
-    private int health;
+    [SerializeField] protected int startingHealth = 100;
+    [SerializeField] private int health;
 
     // Optimize with pooling system later
     //public event Action onDied;

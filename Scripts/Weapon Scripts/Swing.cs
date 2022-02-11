@@ -3,11 +3,11 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
- * This script serves as a general-purpose Bullet module that can be added to any projectile Object.
- * The bullet will gain the ability to despawn after a certain amount of time, get destroyed when colliding with objects, and ignore holes/owner collision.
+ * This script serves as a general-purpose Swing module that can be added to any melee Object.
+ * The swing will gain the ability to despawn after a certain amount of time, get destroyed when colliding with objects, and ignore holes/owner collision.
  */
 
-public class Bullet : MonoBehaviour
+public class Swing : MonoBehaviour
 {
     public GameObject owner;
 
@@ -15,7 +15,7 @@ public class Bullet : MonoBehaviour
     float angle;
     float timer;
 
-    [SerializeField] int damage;
+    public int damage;
     [SerializeField] public float speed = 5f;
     [SerializeField] float despawn;
 
@@ -40,7 +40,7 @@ public class Bullet : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision)
     {
         Health health = collision.gameObject.GetComponent<Health>();
-        
+
         if (collision.gameObject.tag == "Wall")
         {
             Destroy(gameObject);

@@ -59,7 +59,7 @@ public class RunnerScript : MonoBehaviour
                 } while ((Mathf.Abs(playerx - enemyx) > Mathf.Abs(playerx - randx) || Mathf.Abs(playery - enemyy) > Mathf.Abs(playery - randy) ||
                 !map.getCell(randx, randy).GetComponent<MapCell>().passable) && tries <= 50);
 
-                Debug.Log(randx + " " + randy);
+                //Debug.Log(randx + " " + randy);
                 runaway.transform.position = new Vector2(randx, randy);
                 gameObject.GetComponent<AIDestinationSetter>().target = runaway.transform;
                 scared = 1f;
@@ -88,11 +88,15 @@ public class RunnerScript : MonoBehaviour
             {
                 int score1 = 100 - (int)rayDist;
                 RaycastHit2D hit = Physics2D.Raycast(new Vector2(enemyx, enemyy), new Vector2(playerx - enemyx, playery - enemyy), rayDist);
-                Debug.DrawRay(new Vector2(playerx, playery), new Vector2(enemyx - playerx, enemyy - playery), Color.red, 0.3f);
-                Debug.Log(hit.collider);
+                //Debug.Log(hit.collider);
                 if (hit.collider == null || hit.collider.gameObject.name != "Wall(Clone)")
                 {
+                    Debug.DrawRay(new Vector2(playerx, playery), new Vector2(enemyx - playerx, enemyy - playery), Color.red, 0.3f);
                     score1 *= -1;
+                }
+                else
+                {
+                    Debug.DrawRay(new Vector2(playerx, playery), new Vector2(enemyx - playerx, enemyy - playery), Color.blue, 0.3f);
                 }
                 return score1;
             }
@@ -167,7 +171,6 @@ public class RunnerScript : MonoBehaviour
 
             }
         }
-        return 5;
     }
     ///*
     bool miniMax()

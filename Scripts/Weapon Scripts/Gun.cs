@@ -57,7 +57,7 @@ public class Gun : MonoBehaviour
             // Spawns bullet where player is facing.
             GameObject bullet = Instantiate(this.bullet.gameObject, gunEndPointPosition, Quaternion.Euler(new Vector3(0, 0, angle)));
             bullet.GetComponent<Rigidbody2D>().AddForce(aimDirection * this.bullet.speed);
-            bullet.GetComponent<Bullet>().owner = gameObject;
+            bullet.GetComponent<Bullet>().owner = gameObject.transform.root.gameObject;
 
             // Weapon cooldown in between shots
             StartCoroutine(waitWeaponCooldown());

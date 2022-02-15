@@ -7,9 +7,6 @@ using System;
 public class AiChasePlayerState : AiState 
 {
 
-    Path path;
-    int currentWaypoint = 0;
-    bool reachedEndOfPath = false;
 
     public AiStateId GetId()
     {
@@ -29,7 +26,16 @@ public class AiChasePlayerState : AiState
 
     void AiState.Update(AiAgent agent)
     {
-        
+        // Look at player
+        Vector3 aimDirection = (agent.target.position - agent.t.position).normalized;
+        var angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        agent.transform.eulerAngles = new Vector3(0, 0, angle);
+
+        //agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, Quaternion.LookRotation(aimDirection), Time.deltaTime * 2);
+
+        //Vector2 v = agent.rb.velocity;
+        //var angle = Mathf.Atan2(v.y, v.x) * Mathf.Rad2Deg;
+        //agent.transform.rotation = Quaternion.Euler(new Vector3(0, 0, 180));
     }
 
 }

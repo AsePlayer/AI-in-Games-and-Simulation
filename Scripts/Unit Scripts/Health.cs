@@ -13,13 +13,18 @@ public class Health : MonoBehaviour
     [SerializeField] protected int startingHealth = 100;
     [SerializeField] private int health;
 
+    AiAgent agent;
+
     // Optimize with pooling system later
     //public event Action onDied;
 
     private void Awake()
     {
         health = startingHealth;
+        agent = GetComponent<AiAgent>();
     }
+
+    
 
     public void takeDamage(int amount)
     {
@@ -32,6 +37,9 @@ public class Health : MonoBehaviour
 
     private void die()
     {
+        AiDeathState deathState = agent.stateMachine.GetState(AiStateId.Death) as AiDeathState;
+        // deathState.whatever to access it
+        agent.stateMachine.ChangeState(AiStateId.Death);
         Destroy(gameObject);
         /*
          * Eventually propegate this out to Pooling system or whateva instead

@@ -26,7 +26,13 @@ public class Melee : MonoBehaviour
         swish.SetActive(false);
         // Set animator to Parent Object's Animator Component.
         playerAimWeapon = gameObject.transform.root.GetComponent<PlayerAimWeapon>();
-        playerAimWeapon.setAnimation("isAttackingMelee");
+        //playerAimWeapon.setAnimation("isAttackingMelee");
+    }
+
+    private void Start()
+    {
+        if (playerAimWeapon != null)
+            playerAimWeapon.setAnimation("isAttackingMelee");
     }
 
 

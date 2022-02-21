@@ -15,11 +15,13 @@ public class Ammo : MonoBehaviour
     [SerializeField] protected int magCapacity = 10;
     [SerializeField] protected int ammoInMag;
     [SerializeField] protected bool isReloading;
+    AimWeapon aimWeapon;
 
     void Awake()
     {
         gun = this.GetComponent<Gun>();
         ammoInMag = magCapacity;
+        aimWeapon = gameObject.transform.root.GetComponent<AimWeapon>();
     }
 
     public bool shotPossible()
@@ -63,7 +65,8 @@ public class Ammo : MonoBehaviour
         // Full ammo? No reload.
         if (ammoInMag == magCapacity)
             return;
-           
+
+        aimWeapon.setWeaponAnimationStatus("isReloading", 1);
         StartCoroutine(reload());
     }
 
@@ -76,6 +79,7 @@ public class Ammo : MonoBehaviour
     {
         // Start reloading
         isReloading = true;
+
         
         // Rollover excess reload ammo because we're nice :)
         int ammoToTakeFromCapacity = magCapacity - ammoInMag;
@@ -92,7 +96,7 @@ public class Ammo : MonoBehaviour
         {
             fullReload = true;
         }
-
+        
         // Wait to dispense ammo until reload time has elapsed.
         yield return new WaitForSeconds(gun.getReloadTime());
 
@@ -107,6 +111,7 @@ public class Ammo : MonoBehaviour
 
         // Reloading is complete
         isReloading = false;
+        aimWeapon.setWeaponAnimationStatus("isReloading", 0);
     }
 
 }

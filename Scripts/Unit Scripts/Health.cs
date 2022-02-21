@@ -11,7 +11,9 @@ using UnityEngine;
 public class Health : MonoBehaviour
 {
     [SerializeField] protected int startingHealth = 100;
+    [SerializeField] protected int maxhealth = 100;
     [SerializeField] private int health;
+    
 
     AiAgent agent;
 
@@ -33,12 +35,19 @@ public class Health : MonoBehaviour
         {
             die();
         }
+        else if (health > maxhealth)
+        {
+            health = maxhealth;
+        }
     }
 
     private void die()
     {
-        AiDeathState deathState = agent.stateMachine.GetState(AiStateId.Death) as AiDeathState;
+        if (agent == null)
+            Destroy(gameObject);
+
         // deathState.whatever to access it
+        AiDeathState deathState = agent.stateMachine.GetState(AiStateId.Death) as AiDeathState;
         agent.stateMachine.ChangeState(AiStateId.Death);
         Destroy(gameObject);
         /*
@@ -48,5 +57,15 @@ public class Health : MonoBehaviour
          *      onDied();
          * }
          */
+    }
+
+    public int getHealth()
+    {
+        return health;
+    }
+
+    public int getMaxHealth()
+    {
+        return maxhealth;
     }
 }

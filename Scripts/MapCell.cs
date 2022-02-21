@@ -37,6 +37,20 @@ public class MapCell : MonoBehaviour
         return coord;
     }
 
+    public bool hasKit()
+    {
+        LayerMask layer = LayerMask.GetMask("Item");
+        float x = transform.position.x;
+        float y = transform.position.y;
+        RaycastHit2D hit = Physics2D.Raycast(new Vector2(x, y), new Vector2(x, y + 1), 0.1f, layer);
+        if (hit.collider != null)
+        {
+            Debug.DrawRay(new Vector2(x, y), new Vector2(0, 0.1f), Color.green, 0.1f);
+            return true;
+        }
+        return false;
+    }
+
     // Start is called before the first frame update
     void Start()
     { 
@@ -46,6 +60,6 @@ public class MapCell : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        //hasKit();
     }
 }

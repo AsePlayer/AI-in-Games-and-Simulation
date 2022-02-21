@@ -20,6 +20,8 @@ public class AiAgent : MonoBehaviour
     public Transform t;
     public Transform aimGunEndPointTransform;
 
+    public AimWeapon aim;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -35,6 +37,7 @@ public class AiAgent : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         rs = GetComponent<RunnerScript>();
         t = GetComponent<Transform>();
+        aim = GetComponent<AimWeapon>();
         aimGunEndPointTransform = GameObject.Find("Aim").transform;
         
     }

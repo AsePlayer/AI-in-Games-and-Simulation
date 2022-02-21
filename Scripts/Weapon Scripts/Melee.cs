@@ -10,10 +10,10 @@ using UnityEngine;
 public class Melee : MonoBehaviour
 {
     [SerializeField] GameObject owner;
-    [SerializeField] PlayerAimWeapon playerAimWeapon;
+    [SerializeField] AimWeapon aimWeapon;
     [SerializeField] protected string name;
     [SerializeField] protected float weaponCooldown = 0.15f;
-    [SerializeField] protected bool weaponOnCooldown;
+    [SerializeField] public bool weaponOnCooldown;
     [SerializeField] protected GameObject swish;
     [SerializeField] protected GameObject hitbox;
     [SerializeField] protected int damage;
@@ -25,14 +25,14 @@ public class Melee : MonoBehaviour
         // Disable weapon slash initially until hit is triggered.
         swish.SetActive(false);
         // Set animator to Parent Object's Animator Component.
-        playerAimWeapon = gameObject.transform.root.GetComponent<PlayerAimWeapon>();
+        aimWeapon = gameObject.transform.root.GetComponent<AimWeapon>();
         //playerAimWeapon.setAnimation("isAttackingMelee");
     }
 
     private void Start()
     {
-        if (playerAimWeapon != null)
-            playerAimWeapon.setAnimation("isAttackingMelee");
+        if (aimWeapon != null)
+            aimWeapon.setAnimation("isAttackingMelee");
     }
 
 
@@ -44,7 +44,7 @@ public class Melee : MonoBehaviour
 
         //swish.SetActive(true);  make this better first
         
-        playerAimWeapon.setWeaponAnimationStatus(1);
+        aimWeapon.setWeaponAnimationStatus(1);
 
 
         StartCoroutine(waitWeaponSwing(gunEndPointPosition, angle, aimDirection));
@@ -82,7 +82,7 @@ public class Melee : MonoBehaviour
 
         yield return new WaitUntil(() => spawnProjectile == true);
         // Treating a melee attack as a stationary bullet.
-        GameObject hitbox = Instantiate(this.hitbox.gameObject, playerAimWeapon.aimGunEndPointTransform.position, Quaternion.Euler(new Vector3(0, 0, playerAimWeapon.angle)));
+        GameObject hitbox = Instantiate(this.hitbox.gameObject, aimWeapon.aimGunEndPointTransform.position, Quaternion.Euler(new Vector3(0, 0, aimWeapon.angle)));
         
         // Cache this info soon
         hitbox.GetComponent<Swing>().damage = this.damage;

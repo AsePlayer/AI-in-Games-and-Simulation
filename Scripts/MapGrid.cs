@@ -1,39 +1,44 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Pathfinding;
 
 public class MapGrid : MonoBehaviour
 {
     public int width;
     public int height;
     public int goals;
+    public int kits;
 
     public GameObject wall;
     public GameObject grass;
     public GameObject hole;
     public GameObject goal;
+    public GameObject health;
 
     public Rigidbody2D player;
+
+    public AstarPath aStar;
 
     enum direction {up, down, left, right};
 
     GameObject[,] grid;
 
-    public MapGrid(int w, int h, int g)
+    public MapGrid(int w, int h, int g, int k)
     {
         width = w;
         height = h;
         goals = g;
-
+        kits = k;
     }
 
-    public void generate(int w, int h, int g)
+    public void generate(int w, int h, int g, int k)
     {
         width = w;
         height = h;
         goals = g;
 
-        Debug.Log(wall.GetComponent<MapCell>().id);
+        //Debug.Log(wall.GetComponent<MapCell>().id);
         grid = new GameObject[w, h];
 
         //Places outer walls
@@ -83,7 +88,7 @@ public class MapGrid : MonoBehaviour
                 tries++;
             } while (!goalRadius(offsetW, offsetH, w, h) && tries < 100);
 
-            Debug.Log(offsetW + ", " + offsetH);
+            //Debug.Log(offsetW + ", " + offsetH);
             grid[offsetW, offsetH] = goal;
         }
 
@@ -131,6 +136,33 @@ public class MapGrid : MonoBehaviour
             }
         }
         //StartCoroutine(waitThenScan());
+
+        //Adds health kits
+        for (int i = 0; i < k; i++)
+        {
+            int randx;
+            int randy;
+            do
+            {
+                randx = Random.Range(4, width - 5);
+                randy = Random.Range(4, height - 5);
+            }
+            while (!grid[randx, randy].GetComponent<MapCell>().passable);
+
+            GameObject kit = Instantiate(health, new Vector3(randx, randy, -1), Quaternion.identity);
+            kit.transform.parent = gameObject.transform;
+        }
+
+        //Sets pathfinding graph size and placement
+        var gg = AstarPath.active.astarData.gridGraph;
+        gg.width = width;
+        gg.depth = height;
+        gg.center = new Vector3((width - 1) / 2f, (height - 1) / 2f, -1);
+        gg.UpdateSizeFromWidthDepth();
+        
+
+        // Recalculate the graph
+        AstarPath.active.Scan();
     }
 
     bool goalRadius(int x, int y, int w, int h)
@@ -319,6 +351,11 @@ public class MapGrid : MonoBehaviour
     public GameObject getCell(int x, int y)
     {
         return grid[x, y];
+    }
+
+    public void setCell(GameObject c, int x, int y)
+    {
+        grid[x, y] = c;
     }
 
     // Start is called before the first frame update

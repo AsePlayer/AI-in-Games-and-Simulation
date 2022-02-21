@@ -18,6 +18,7 @@ public class Gun : MonoBehaviour
     [SerializeField] protected float weaponCooldown = 0.5f;
     [SerializeField] protected bool weaponOnCooldown;
     [SerializeField] protected GameObject muzzleflash;
+    [SerializeField] public string reloadAnimation;
 
     private Ammo ammo;
     private Bullet bullet;
@@ -30,6 +31,8 @@ public class Gun : MonoBehaviour
         // Cache information that will be accessed often.
         ammo = this.GetComponent<Ammo>();
         bullet = ammo.getBullet();
+
+        
     }
 
 

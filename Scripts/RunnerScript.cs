@@ -17,20 +17,31 @@ public class RunnerScript : MonoBehaviour
 
         float timer; //so that it doesn't do such a complex calculation every frame
 
+    int layer;
+
         // Start is called before the first frame update
         void Start()
         {
-            timer = 1f;
+        layer = LayerMask.GetMask("Impassable");
+        timer = 1f;
         }
 
         // Update is called once per frame
         void Update()
         {
             timer += Time.deltaTime;
+
+        if (Mathf.Sqrt((player.transform.position.x - gameObject.transform.position.x) * (player.transform.position.x - gameObject.transform.position.x) + 
+            (player.transform.position.y - gameObject.transform.position.y) * (player.transform.position.y - gameObject.transform.position.y)) <= 3)
+        {
+            gameObject.GetComponent<AIDestinationSetter>().target = playerSpot;
+        }
+
         if (scared > 0)
         {
             scared -= Time.deltaTime;
         }
+        
             else if (timer >= 0.25f)
             {
             //Debug.Log(gameObject.GetComponent<AIPath>().path.path[0].position);
@@ -41,7 +52,7 @@ public class RunnerScript : MonoBehaviour
                 int enemyy = Mathf.RoundToInt(gameObject.transform.position.y);
                 timer = 0f;
             int prio = miniMaxList(playerx, playery, enemyx, enemyy, map, 0, 5, gameObject.GetComponent<AIPath>().path, true);
-            Debug.Log(prio);
+            //Debug.Log(prio);
             if (prio > 0)
             {
                 gameObject.GetComponent<AIDestinationSetter>().target = playerSpot;
@@ -87,7 +98,7 @@ public class RunnerScript : MonoBehaviour
             else
             {
                 int score1 = 100 - (int)rayDist;
-                RaycastHit2D hit = Physics2D.Raycast(new Vector2(enemyx, enemyy), new Vector2(playerx - enemyx, playery - enemyy), rayDist);
+                RaycastHit2D hit = Physics2D.Raycast(new Vector2(enemyx, enemyy), new Vector2(playerx - enemyx, playery - enemyy), rayDist, layer);
                 //Debug.Log(hit.collider);
                 if (hit.collider == null || hit.collider.gameObject.name != "Wall(Clone)")
                 {
@@ -108,8 +119,8 @@ public class RunnerScript : MonoBehaviour
                 //checks to see for optimal a* path or standstill first (much faster to compute)
                 if (gameObject.GetComponent<AIPath>().path.path.Count > depth + 1)
                 {
-                    int nextx = (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.x - 37) / 1000;
-                    int nexty = (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.y + 21) / 1000;
+                    int nextx = (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.x + 100) / 1000;
+                    int nexty = (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.y + 100) / 1000;
                     //Debug.Log((gameObject.GetComponent<AIPath>().path.path[depth + 1].position.x - 37) + " " + (gameObject.GetComponent<AIPath>().path.path[depth + 1].position.y + 27));
                     //Debug.Log(nextx + " " + nexty);
                     //return Mathf.Max(miniMaxList(playerx, playery, nextx, nexty, map, depth + 1, maxDepth, p, !enemyTurn), miniMaxList(playerx, playery, enemyx, enemyy, map, depth + 1, maxDepth, p, !enemyTurn));
@@ -172,10 +183,5 @@ public class RunnerScript : MonoBehaviour
             }
         }
     }
-    ///*
-    bool miniMax()
-    {
-        return true;
-    }
-        //*/
+
 }

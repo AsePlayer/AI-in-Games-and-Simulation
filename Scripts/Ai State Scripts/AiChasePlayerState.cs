@@ -27,9 +27,9 @@ public class AiChasePlayerState : AiState
     void AiState.Update(AiAgent agent)
     {
         // Look at player
-        Vector3 aimDirection = (agent.target.position - agent.t.position).normalized;
-        var angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-        agent.transform.eulerAngles = new Vector3(0, 0, angle);
+        // Vector3 aimDirection = (agent.target.position - agent.t.position).normalized;
+        // var angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+        // agent.transform.eulerAngles = new Vector3(0, 0, angle);
 
         //agent.transform.rotation = Quaternion.Slerp(agent.transform.rotation, Quaternion.LookRotation(aimDirection), Time.deltaTime * 2);
 

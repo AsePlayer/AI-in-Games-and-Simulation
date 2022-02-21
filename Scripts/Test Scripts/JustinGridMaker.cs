@@ -10,13 +10,14 @@ public class JustinGridMaker : MonoBehaviour
     void Start()
     {
         MapGrid gen = grid.GetComponent <MapGrid>();
-        gen.generate(gen.width, gen.height, gen.goals);
+        gen.generate(gen.width, gen.height, gen.goals, gen.kits);
 
         for (int i = 0; i < gen.width; i++)
         {
             for (int j = 0; j < gen.height; j++)
             {
                 GameObject cell = Instantiate(gen.getCell(i, j), new Vector3(i, j, 0), Quaternion.identity);
+                gen.setCell(cell, i, j);
                 cell.transform.parent = grid.transform;
             }
         }

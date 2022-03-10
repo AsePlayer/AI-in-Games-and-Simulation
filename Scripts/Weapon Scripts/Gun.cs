@@ -19,6 +19,7 @@ public class Gun : MonoBehaviour
     [SerializeField] protected bool weaponOnCooldown;
     [SerializeField] protected GameObject muzzleflash;
     [SerializeField] public string reloadAnimation;
+    [SerializeField] protected int damage;
 
     private Ammo ammo;
     private Bullet bullet;
@@ -31,8 +32,6 @@ public class Gun : MonoBehaviour
         // Cache information that will be accessed often.
         ammo = this.GetComponent<Ammo>();
         bullet = ammo.getBullet();
-
-        
     }
 
 
@@ -58,9 +57,12 @@ public class Gun : MonoBehaviour
             muzzleflash.SetActive(true);
 
             // Spawns bullet where player is facing.
-            GameObject bullet = Instantiate(this.bullet.gameObject, gunEndPointPosition, Quaternion.Euler(new Vector3(0, 0, angle)));
+            Bullet b = ammo.getBullet();
+            b.damage = damage;
+            b.owner = gameObject.transform.root.gameObject;
+
+            GameObject bullet = Instantiate(b.gameObject, gunEndPointPosition, Quaternion.Euler(new Vector3(0, 0, angle)));
             bullet.GetComponent<Rigidbody2D>().AddForce(aimDirection * this.bullet.speed);
-            bullet.GetComponent<Bullet>().owner = gameObject.transform.root.gameObject;
 
             // Weapon cooldown in between shots
             StartCoroutine(waitWeaponCooldown());

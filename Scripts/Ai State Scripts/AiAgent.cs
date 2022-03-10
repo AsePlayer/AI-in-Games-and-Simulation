@@ -22,6 +22,8 @@ public class AiAgent : MonoBehaviour
 
     public AimWeapon aim;
 
+    private AIDestinationSetter ai;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -39,7 +41,7 @@ public class AiAgent : MonoBehaviour
         t = GetComponent<Transform>();
         aim = GetComponent<AimWeapon>();
         aimGunEndPointTransform = GameObject.Find("Aim").transform;
-        
+        target = GameObject.Find("Player").transform;
     }
 
     // Update is called once per frame

@@ -15,7 +15,6 @@ public class AiChasePlayerState : AiState
     void AiState.Enter(AiAgent agent)
     {
         agent.aiPath.enabled = true;
-
     }
 
     void AiState.Exit(AiAgent agent)

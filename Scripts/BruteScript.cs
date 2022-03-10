@@ -40,12 +40,19 @@ public class BruteScript : MonoBehaviour
 
     int layer;
 
+    Rigidbody2D rb;
+
+    AimWeapon aim;
+
     // Start is called before the first frame update
     void Start()
     {
         //path = new List<coord>();
         layer = LayerMask.GetMask("Impassable");
         timer = 1f;
+        player = GameObject.Find("Player");
+        map = GameObject.Find("Grid").GetComponent<MapGrid>();
+        rb = gameObject.GetComponent<Rigidbody2D>();
     }
 
     // Update is called once per frame
@@ -102,10 +109,10 @@ public class BruteScript : MonoBehaviour
         //Reward for finding health kit is greater the lower its health is (termination state)
         if (map.getCell(enemyx, enemyy).GetComponent<MapCell>().hasKit() && hp.getHealth() < hp.getMaxHealth())
         {
-            Debug.Log("Could get Kit");
+            //Debug.Log("Could get Kit");
             
             int final = score + (int)Mathf.Pow(0.9f, 5 - depth) * 5 * (gameObject.GetComponent<Health>().getMaxHealth() - gameObject.GetComponent<Health>().getHealth());
-            Debug.Log(final);
+            //Debug.Log(final);
             node n = new node(final, p);
             if (n.points > optimal.points)
             {
@@ -129,7 +136,6 @@ public class BruteScript : MonoBehaviour
                 optimal = n;
                 //Debug.Log("Optimal changed");
             }
-
             return final;
         }
 
@@ -185,17 +191,29 @@ public class BruteScript : MonoBehaviour
         //Debug.Log(optimal.dir.Count());
         if (optimal.dir.Count == 0 || los)
         {
-            gameObject.GetComponent<Rigidbody2D>().velocity = new Vector2(0f, 0f);
+            rb.velocity = new Vector2(0f, 0f);
         }
         else
         {
             Vector2 goal = new Vector2(optimal.dir[0].x, optimal.dir[0].y);
-            Vector2 dir = goal -  gameObject.GetComponent<Rigidbody2D>().position;
+            Vector2 dir = goal - rb.position;
+
             float mult = speed/dir.magnitude;
 
-            gameObject.GetComponent<Rigidbody2D>().velocity = mult * dir;
+            // Lazy fix to NaN bug
+            if(!float.IsNaN(mult) && !float.IsNaN(dir.x) && !float.IsNaN(dir.y))
+                rb.velocity = mult * dir;
+
+
+            var angle = Mathf.Atan2(rb.velocity.y, rb.velocity.x) * Mathf.Rad2Deg;
+            var qr = Quaternion.Euler(new Vector3(0, 0, angle));
+
+            rb.transform.rotation = Quaternion.Lerp(rb.transform.rotation, qr, Time.deltaTime * 0.5f);
         }
-        if (optimal.dir.Count > 0 && (gameObject.GetComponent<Rigidbody2D>().position - new Vector2(optimal.dir[0].x, optimal.dir[0].y)).magnitude <= 0.05f)
+
+
+
+        if (optimal.dir.Count > 0 && (rb.position - new Vector2(optimal.dir[0].x, optimal.dir[0].y)).magnitude <= 0.05f)
         {
             optimal.dir.RemoveAt(0);
         }

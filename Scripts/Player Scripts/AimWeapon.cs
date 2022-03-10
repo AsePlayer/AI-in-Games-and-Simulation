@@ -1,6 +1,6 @@
 using System.Collections;
 using UnityEngine;
-
+using Pathfinding;
 public class AimWeapon : MonoBehaviour
 {
     [SerializeField] protected Animator animator;
@@ -13,11 +13,11 @@ public class AimWeapon : MonoBehaviour
     
     private GameObject gunObject;
     [SerializeField] private Transform gunTransform;
-    [SerializeField] private Gun gun;
+    [SerializeField] public Gun gun;
 
     private GameObject meleeObject;
     [SerializeField] private Transform meleeTransform;
-    [SerializeField] private Melee melee;
+    [SerializeField] public Melee melee;
 
     public float angle;
 
@@ -25,6 +25,8 @@ public class AimWeapon : MonoBehaviour
 
     private GameObject player;
 
+    private bool los;
+    private int layer;
     private void Awake()
     {
         aimTransform = transform.Find("Aim");
@@ -47,6 +49,8 @@ public class AimWeapon : MonoBehaviour
         // Determine if Player or Enemy.
         if (gameObject.layer != LayerMask.NameToLayer("Player"))
             isEnemy = true;
+
+        layer = LayerMask.GetMask("Impassable");
     }
 
 
@@ -83,6 +87,20 @@ public class AimWeapon : MonoBehaviour
             if (hit.collider != null && hit.collider.gameObject.tag == "Wall")
             {
                 Debug.DrawRay(new Vector2(playerx, playery), new Vector2(enemyx - playerx, enemyy - playery), Color.red, 0.02f);
+                los = false;
+
+                if (GetComponent<AIPath>().hasPath)
+                {
+
+                    Vector3 nextPath = GetComponent<AIPath>().path.vectorPath[0];
+                    Vector3 aimDirection = (agent.t.position - nextPath).normalized;
+
+                    var angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
+                    var qr = Quaternion.Euler(new Vector3(0, 0, angle));
+
+                    agent.transform.rotation = Quaternion.Lerp(agent.transform.rotation, qr, Time.deltaTime * 5f);
+                }
+                    
             }
             else
             {
@@ -90,6 +108,7 @@ public class AimWeapon : MonoBehaviour
                 Vector3 aimDirection = (agent.target.position - agent.t.position).normalized;
                 var angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
                 agent.transform.eulerAngles = new Vector3(0, 0, angle);
+                los = true;
             }
         }
 
@@ -105,7 +124,6 @@ public class AimWeapon : MonoBehaviour
 
     private void handleShooting()
     {
-        
         Vector3 gunEndPointPosition = aimGunEndPointTransform.position;
 
         if (Input.GetMouseButtonDown(0) && !isEnemy)
@@ -133,16 +151,20 @@ public class AimWeapon : MonoBehaviour
         }
         if(isEnemy)
         {
+
             Vector3 aimDirection = (agent.target.position - agent.t.position).normalized;
             var angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-            agent.transform.eulerAngles = new Vector3(0, 0, angle);
+            var qr = Quaternion.Euler(new Vector3(0, 0, angle));
+
+            agent.transform.rotation = Quaternion.Lerp(agent.transform.rotation, qr, Time.deltaTime * 5f);
 
 
-            // If gun is not null, shoot.
-            if (gun != null)
+            // If gun is not null and enemy is ready to attack, shoot.
+            if (gun != null && los)
                 gun.shoot(gunEndPointPosition, angle, aimDirection);
 
-            else if (melee != null)
+            // If melee is not null and enemy is in range to attack, slice.
+            else if (melee != null && Vector3.Distance(agent.target.position, agent.t.position) < 1.75f)
             {
                 if (melee.weaponOnCooldown)
                     return;
@@ -190,7 +212,31 @@ public class AimWeapon : MonoBehaviour
             melee.setSpawnProjectile(true);
         spawnProjectile = false;
     }
+    private void handleWeaponSwap()
+    {
+        // Check if GameObjects with Weapon tag are colliding with Player.
+        // If so, take that weapon and swap it with the player's current weapon.
 
+        // If it is melee, set gun to null
+        // If it is gun, set melee to null
+
+        // If things break due to this, have a bool called swappingWeapon and only do things if it is set to false.
+
+        /* Check if it is a gun by seeing if it has component ammo :^) */
+
+        // Cache gun information
+        gunTransform = transform.Find("Aim/RightArm/Gun");
+        if (gunTransform != null && gunTransform.gameObject.activeSelf)
+        {
+            melee = null;
+            gun = gunTransform.GetComponent<Gun>();
+        }
+
+        // Cache melee information
+        meleeTransform = transform.Find("Aim/RightArm/Melee");
+        if (meleeTransform != null && meleeTransform.gameObject.activeSelf)
+            melee = meleeTransform.GetComponent<Melee>();
+    }
 
     // Helper functions
     public static Vector3 getMouseWorldPosition()

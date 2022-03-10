@@ -9,12 +9,14 @@ public class MapGrid : MonoBehaviour
     public int height;
     public int goals;
     public int kits;
+    public int spawnerMax = 2;
 
     public GameObject wall;
     public GameObject grass;
     public GameObject hole;
     public GameObject goal;
     public GameObject health;
+    public GameObject enemySpawner;
 
     public Rigidbody2D player;
 
@@ -151,6 +153,22 @@ public class MapGrid : MonoBehaviour
 
             GameObject kit = Instantiate(health, new Vector3(randx, randy, -1), Quaternion.identity);
             kit.transform.parent = gameObject.transform;
+        }
+
+        //Adds spawners - Ryan
+        for (int i = 0; i < k - 3; i++)
+        {
+            int randx;
+            int randy;
+            do
+            {
+                randx = Random.Range(2, width - 2);
+                randy = Random.Range(2, height - 2);
+            }
+            while (!grid[randx, randy].GetComponent<MapCell>().passable);
+
+            GameObject spawner = Instantiate(enemySpawner, new Vector3(randx, randy, -1), Quaternion.identity);
+            spawner.transform.parent = gameObject.transform;
         }
 
         //Sets pathfinding graph size and placement

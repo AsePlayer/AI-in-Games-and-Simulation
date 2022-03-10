@@ -14,7 +14,7 @@ public class Ammo : MonoBehaviour
     [SerializeField] protected int ammoCapacity = 60;
     [SerializeField] protected int magCapacity = 10;
     [SerializeField] protected int ammoInMag;
-    [SerializeField] protected bool isReloading;
+    [SerializeField] public bool isReloading;
     AimWeapon aimWeapon;
 
     void Awake()
@@ -112,6 +112,16 @@ public class Ammo : MonoBehaviour
         // Reloading is complete
         isReloading = false;
         aimWeapon.setWeaponAnimationStatus("isReloading", 0);
+    }
+
+    public int getAmmoCapacity()
+    {
+        return ammoCapacity;
+    }
+
+    public int getAmmoInMag()
+    {
+        return ammoInMag;
     }
 
 }

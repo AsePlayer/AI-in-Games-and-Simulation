@@ -15,7 +15,7 @@ public class Bullet : MonoBehaviour
     float angle;
     float timer;
 
-    [SerializeField] int damage;
+    public int damage;
     [SerializeField] public float speed = 5f;
     [SerializeField] float despawn;
 

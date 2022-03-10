@@ -178,7 +178,7 @@ public class BruteScript : MonoBehaviour
             }
             //standing still is worse than moving
             List<coord> next2 = new List<coord>(p);
-            vals.Add(prio(playerx, playery, enemyx, enemyy, depth - 1, score - 10, next2));
+            //vals.Add(prio(playerx, playery, enemyx, enemyy, depth - 1, score - 10, next2));
 
             //returns the max of the list
             return vals.Max();
@@ -189,7 +189,7 @@ public class BruteScript : MonoBehaviour
     private void travel()
     {
         //Debug.Log(optimal.dir.Count());
-        if (optimal.dir.Count == 0 || los)
+        if (optimal.dir.Count == 0 )//|| los)
         {
             rb.velocity = new Vector2(0f, 0f);
         }

@@ -9,7 +9,7 @@ public class MapGrid : MonoBehaviour
     public int height;
     public int goals;
     public int kits;
-    public int spawnerMax = 2;
+    public int spawnerMax;
 
     public GameObject wall;
     public GameObject grass;
@@ -156,7 +156,7 @@ public class MapGrid : MonoBehaviour
         }
 
         //Adds spawners - Ryan
-        for (int i = 0; i < k - 3; i++)
+        for (int i = 0; i < spawnerMax; i++)
         {
             int randx;
             int randy;

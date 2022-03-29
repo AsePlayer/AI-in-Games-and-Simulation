@@ -22,17 +22,23 @@ public class UIManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        scoreText.text = "Score: " + score.getScoreTotal()/*.ToString()*/;
+        scoreText.text = "Enemies Remaining: " + score.getScoreTotal()/*.ToString()*/;
         // If player has gun, display ammo information
-        if(aw != null && aw.gun != null)
+        
+        if (aw != null && aw.gun != null)
         {
             ammo = aw.gun.getAmmo();
-            ammoText.text = ammo.getAmmoInMag().ToString() + "/" + ammo.getAmmoCapacity().ToString();
+            ammoText.text = "Ammo: " + ammo.getAmmoInMag().ToString() + "/" + ammo.getAmmoCapacity().ToString();
         }
         // If player has melee, display 0/0
         else
         {
-            ammoText.text = "0/0";
+            ammoText.text = "Ammo: 0/0";
+        }
+    
+        if(score.getScoreTotal() <= 0)
+        {
+            // New level
         }
     }
 

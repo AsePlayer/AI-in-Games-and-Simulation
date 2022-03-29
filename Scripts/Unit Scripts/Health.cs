@@ -20,6 +20,7 @@ public class Health : MonoBehaviour
 
     AiAgent agent;
 
+    private Transform aimTransform;
     // Optimize with pooling system later
     //public event Action onDied;
 
@@ -31,6 +32,9 @@ public class Health : MonoBehaviour
 
         healthbar = Instantiate(healthbar);
         healthbarImage = healthbar.transform.Find("HP").GetComponent<Image>();
+
+        // New
+        aimTransform = transform.Find("AimWeapon");
     }
 
     private void Update()
@@ -70,16 +74,19 @@ public class Health : MonoBehaviour
             return;
         }
 
-        // deathState.whatever to access it
-        AiDeathState deathState = agent.stateMachine.GetState(AiStateId.Death) as AiDeathState;
-        agent.stateMachine.ChangeState(AiStateId.Death);
-
         // Get enemy's score and increment player's score.
         if(this.GetComponent<Score>() != null)
             player.GetComponent<Score>().addScoreValue(this.GetComponent<Score>().getScoreValue());
 
+        // deathState.whatever to access it
+        AiDeathState deathState = agent.stateMachine.GetState(AiStateId.Death) as AiDeathState;
+        agent.stateMachine.ChangeState(AiStateId.Death);
 
-        Destroy(gameObject);
+        if (gameObject.GetComponent<AimWeapon>() != null)
+            gameObject.GetComponent<AimWeapon>().dropWeapon();
+        else
+            Destroy(gameObject);
+
         /*
          * Eventually propegate this out to Pooling system or whateva instead
          * if(onDied != null)

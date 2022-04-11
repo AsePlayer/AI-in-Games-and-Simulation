@@ -10,6 +10,7 @@ public class MapGrid : MonoBehaviour
     public int goals;
     public int kits;
     public int spawnerMax;
+    public int towers;
 
     public GameObject wall;
     public GameObject grass;
@@ -17,6 +18,7 @@ public class MapGrid : MonoBehaviour
     public GameObject goal;
     public GameObject health;
     public GameObject enemySpawner;
+    public GameObject tower;
 
     public Rigidbody2D player;
 
@@ -169,6 +171,24 @@ public class MapGrid : MonoBehaviour
 
             GameObject spawner = Instantiate(enemySpawner, new Vector3(randx, randy, -1), Quaternion.identity);
             spawner.transform.parent = gameObject.transform;
+        }
+
+        //Adds towers
+        for (int i = 0; i < towers; i++)
+        {
+            int randx;
+            int randy;
+            do
+            {
+                randx = Random.Range(width/2, width - 2);
+                randy = Random.Range(height/2, height - 2);
+            }
+            while (!grid[randx, randy].GetComponent<MapCell>().passable);
+
+            GameObject t = Instantiate(tower, new Vector2(randx, randy), Quaternion.identity);
+            t.transform.parent = gameObject.transform;
+            t.GetComponent<Tower>().player = player;
+            t.GetComponent<Tower>().map = gameObject.GetComponent<MapGrid>();
         }
 
         //Sets pathfinding graph size and placement

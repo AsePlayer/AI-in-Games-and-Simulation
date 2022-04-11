@@ -15,7 +15,13 @@ public class Score : MonoBehaviour
 
     public void addScoreValue(int value)
     {
-        scoreTotal += value;
+        //scoreTotal += value;
+        decrementRemaining();
+    }
+
+    private void decrementRemaining()
+    {
+        scoreTotal--;
     }
 
     public int getScoreTotal()

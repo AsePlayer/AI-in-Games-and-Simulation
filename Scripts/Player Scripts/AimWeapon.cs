@@ -3,7 +3,7 @@ using UnityEngine;
 using Pathfinding;
 public class AimWeapon : MonoBehaviour
 {
-    [SerializeField] protected Animator animator;
+    [SerializeField] public Animator animator;
     [SerializeField] protected string attackAnimationName;
     [SerializeField] private bool spawnProjectile;
     [SerializeField] private bool isEnemy;
@@ -36,19 +36,32 @@ public class AimWeapon : MonoBehaviour
         player = GameObject.Find("Player");
 
         // Cache gun information
-        gunTransform = transform.Find("Aim/RightArm/Gun");
+        gunTransform = transform.Find("Aim/RightArm/GunTransform/Gun");
         if (gunTransform != null && gunTransform.gameObject.activeSelf)
             gun = gunTransform.GetComponent<Gun>();
 
         // Cache melee information
-        meleeTransform = transform.Find("Aim/RightArm/Melee");
+        meleeTransform = transform.Find("Aim/RightArm/MeleeTransform/Melee");
         if (meleeTransform != null && meleeTransform.gameObject.activeSelf)
             melee = meleeTransform.GetComponent<Melee>();
 
 
         // Determine if Player or Enemy.
         if (gameObject.layer != LayerMask.NameToLayer("Player"))
+        {
             isEnemy = true;
+
+
+            // Cache gun information
+            gunTransform = transform.Find("Aim/RightArm/Gun");
+            if (gunTransform != null && gunTransform.gameObject.activeSelf)
+                gun = gunTransform.GetComponent<Gun>();
+
+            // Cache melee information
+            meleeTransform = transform.Find("Aim/RightArm/Melee");
+            if (meleeTransform != null && meleeTransform.gameObject.activeSelf)
+                melee = meleeTransform.GetComponent<Melee>();
+        }
 
         layer = LayerMask.GetMask("Impassable");
     }
@@ -56,6 +69,9 @@ public class AimWeapon : MonoBehaviour
 
     private void Update()
     {
+        if (Time.timeScale == 0)
+            return;
+        handleChangingWeapon();
         handleAiming();
         handleShooting();
         handleReloading();
@@ -126,7 +142,7 @@ public class AimWeapon : MonoBehaviour
     {
         Vector3 gunEndPointPosition = aimGunEndPointTransform.position;
 
-        if (Input.GetMouseButtonDown(0) && !isEnemy)
+        if (Input.GetMouseButton(0) && gun != null && gun.isAuto && !isEnemy || Input.GetMouseButtonDown(0) && !isEnemy)
         {
             Vector3 mousePosition = getMouseWorldPosition();
 
@@ -140,7 +156,9 @@ public class AimWeapon : MonoBehaviour
 
             // If gun is not null, shoot.
             if (gun != null)
+            {
                 gun.shoot(gunEndPointPosition, angle, aimDirection);
+            }
 
             else if (melee != null)
             {
@@ -188,7 +206,7 @@ public class AimWeapon : MonoBehaviour
 
     public void setWeaponAnimationStatus(int status)
     {
-        animator.SetBool(attackAnimationName, System.Convert.ToBoolean(status));
+        //animator.SetBool(attackAnimationName, System.Convert.ToBoolean(status));
     }
     public void setWeaponAnimationStatus(string name, int status)
     {
@@ -212,31 +230,173 @@ public class AimWeapon : MonoBehaviour
             melee.setSpawnProjectile(true);
         spawnProjectile = false;
     }
-    private void handleWeaponSwap()
+
+    public void dropWeapon()
     {
-        // Check if GameObjects with Weapon tag are colliding with Player.
-        // If so, take that weapon and swap it with the player's current weapon.
-
-        // If it is melee, set gun to null
-        // If it is gun, set melee to null
-
-        // If things break due to this, have a bool called swappingWeapon and only do things if it is set to false.
-
-        /* Check if it is a gun by seeing if it has component ammo :^) */
-
-        // Cache gun information
-        gunTransform = transform.Find("Aim/RightArm/Gun");
-        if (gunTransform != null && gunTransform.gameObject.activeSelf)
+        GameObject instance = null;
+        if (gun != null)
         {
+            gun.weaponOnCooldown = false;
+            instance = GameObject.Instantiate(gun.gameObject);
+            instance.transform.position = aimGunEndPointTransform.position;
+
+            //Update ammo of gun on the ground with correct amount so you can't go infinite
+            instance.GetComponent<Gun>().getAmmo().ammoInMag = gun.getAmmo().ammoInMag;
+            //gun.transform.SetParent(null, true);
+            Destroy(gun.gameObject);
+            gun = null;
+        }
+        else if(melee != null)
+        {
+            melee.weaponOnCooldown = false;
+            instance = GameObject.Instantiate(melee.gameObject);
+            instance.transform.position = aimGunEndPointTransform.position;
+
+            Destroy(melee.gameObject);
             melee = null;
-            gun = gunTransform.GetComponent<Gun>();
         }
 
-        // Cache melee information
-        meleeTransform = transform.Find("Aim/RightArm/Melee");
-        if (meleeTransform != null && meleeTransform.gameObject.activeSelf)
-            melee = meleeTransform.GetComponent<Melee>();
+        if (isEnemy)
+            Destroy(gameObject);
+
     }
+
+    private void handleChangingWeapon()
+    {
+        // Enemy doesn't need to do this
+        if (isEnemy)
+            return;
+
+        float distanceToClosestWeapon = Mathf.Infinity;
+        float distanceToGun = Mathf.Infinity;
+        float distanceToMelee = Mathf.Infinity;
+
+        Gun closestGun = null;
+        Melee closestMelee = null;
+
+        Gun[] allGuns = GameObject.FindObjectsOfType<Gun>();
+        Melee[] allMelees = GameObject.FindObjectsOfType<Melee>();
+
+
+
+        foreach (Gun currentGun in allGuns)
+        {
+            // If the weapon isn't currently being used by a Unit (aka it has been dropped on the floor)
+            if (currentGun.transform.parent == null)
+            {
+                distanceToGun = (currentGun.transform.position - this.transform.position).sqrMagnitude;
+                if(distanceToGun < distanceToClosestWeapon)
+                {
+                    distanceToClosestWeapon = distanceToGun;
+                    if(closestGun)
+                        closestGun.gameObject.GetComponent<SpriteRenderer>().color = closestGun.color;
+                    currentGun.gameObject.GetComponent<SpriteRenderer>().color = currentGun.color;
+                    closestGun = currentGun;
+                }
+            }
+        }
+        foreach (Melee currentMelee in allMelees)
+        {
+            // If the weapon isn't currently being used by a Unit (aka it has been dropped on the floor)
+            if (currentMelee.transform.parent == null)
+            {
+                distanceToMelee = (currentMelee.transform.position - this.transform.position).sqrMagnitude;
+                if (distanceToMelee < distanceToClosestWeapon)
+                {
+                    distanceToClosestWeapon = distanceToMelee;
+                    if (closestMelee)
+                        closestGun.gameObject.GetComponent<SpriteRenderer>().color = closestMelee.color;
+                    currentMelee.gameObject.GetComponent<SpriteRenderer>().color = currentMelee.color;
+                    closestMelee = currentMelee;
+                }
+            }
+        }
+
+        // In pickup range
+        if(distanceToClosestWeapon < 2.5f)
+        {
+            if (distanceToGun < distanceToMelee)
+            {
+                Debug.DrawLine(this.transform.position, closestGun.transform.position);
+                closestGun.gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
+
+                if (Input.GetKeyDown(KeyCode.E) && closestGun)
+                {
+                    closestGun.gameObject.GetComponent<SpriteRenderer>().color = closestGun.color;
+                    closestGun.transform.position = transform.Find("Aim/RightArm/GunTransform").position;
+
+                    dropWeapon();
+
+                  
+
+                    if (gun)
+                        gun.gameObject.SetActive(true);
+                    if(melee)
+                        melee.gameObject.SetActive(false);
+                    // Cache gun information
+                    
+                    closestGun.transform.parent = transform.Find("Aim/RightArm/GunTransform");
+                    Vector3 mousePosition = getMouseWorldPosition();
+
+                    Vector3 aimDirection = (mousePosition - transform.position).normalized;
+                    // Getting Euler Angle (we want a fixed x and y coordinate system, with the z-axis being the only one rotating for 2D).
+                    float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg; //Source: https://youtu.be/fuGQFdhSPg4?t=275
+                    closestGun.transform.eulerAngles = new Vector3(0, 0, angle);
+                    closestGun.transform.name = "Gun";
+                    gun = closestGun;
+
+
+
+                }
+            }
+            else if(distanceToGun > distanceToMelee)
+            {
+                if(closestMelee)
+                {
+                    Debug.DrawLine(this.transform.position, closestMelee.transform.position);
+                    closestMelee.gameObject.GetComponent<SpriteRenderer>().color = Color.cyan;
+                }
+                if (Input.GetKeyDown(KeyCode.E) && closestMelee)
+                {
+                    closestMelee.gameObject.GetComponent<SpriteRenderer>().color = closestMelee.color;
+                    closestMelee.transform.position = transform.Find("Aim/RightArm/MeleeTransform").position;
+                    dropWeapon();
+
+
+
+
+
+                    closestMelee.transform.parent = transform.Find("Aim/RightArm/MeleeTransform");
+                    closestMelee.transform.name = "Melee";
+                    Vector3 mousePosition = getMouseWorldPosition();
+
+                    Vector3 aimDirection = (mousePosition - transform.position).normalized;
+                    // Getting Euler Angle (we want a fixed x and y coordinate system, with the z-axis being the only one rotating for 2D).
+                    float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg; //Source: https://youtu.be/fuGQFdhSPg4?t=275
+                    closestMelee.transform.eulerAngles = new Vector3(0, 0, angle);
+
+
+
+                    // Cache melee information
+                    melee = closestMelee;
+                    melee.aimWeapon = this;
+                    animator.SetBool("isAttackDone", true);
+                    //animator.SetBool("isReloading", false);
+                    //setWeaponAnimationStatus("isAttackingMelee", 1);
+                }
+            }
+
+
+
+
+        }
+        else
+        {
+            //if(closestGun)
+        }
+
+    }
+
 
     // Helper functions
     public static Vector3 getMouseWorldPosition()
@@ -250,5 +410,12 @@ public class AimWeapon : MonoBehaviour
     {
         Vector3 worldPosition = worldCamera.ScreenToWorldPoint(screenPosition);
         return worldPosition;
+    }
+
+    public bool hasWeapon()
+    {
+        if (gun != null || melee != null)
+            return true;
+        return false;
     }
 }

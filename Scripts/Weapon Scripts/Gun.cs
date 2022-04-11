@@ -16,14 +16,17 @@ public class Gun : MonoBehaviour
     [SerializeField] protected string name;
     [SerializeField] protected float reloadTime = 5f;
     [SerializeField] protected float weaponCooldown = 0.5f;
-    [SerializeField] protected bool weaponOnCooldown;
+    [SerializeField] public bool weaponOnCooldown;
     [SerializeField] protected GameObject muzzleflash;
     [SerializeField] public string reloadAnimation;
     [SerializeField] protected int damage;
 
+    [SerializeField] public bool isAuto;
+
     private Ammo ammo;
     private Bullet bullet;
 
+    public Color color;
     void Awake()
     {
         // Disable muzzleflash initially until shot is fired.
@@ -32,6 +35,8 @@ public class Gun : MonoBehaviour
         // Cache information that will be accessed often.
         ammo = this.GetComponent<Ammo>();
         bullet = ammo.getBullet();
+
+        color = gameObject.GetComponent<SpriteRenderer>().color;
     }
 
 
@@ -45,11 +50,15 @@ public class Gun : MonoBehaviour
     {
         // No ammo? No shoot.
         if (ammo == null)
+        {
             return;
+        }
 
         // On weapon cooldown? No Shoot.
         if (weaponOnCooldown)
+        {
             return;
+        }
 
         // Ammo? Shoot.
         if (ammo.shotPossible())

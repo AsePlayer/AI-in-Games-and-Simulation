@@ -10,7 +10,7 @@ using UnityEngine;
 public class Melee : MonoBehaviour
 {
     [SerializeField] GameObject owner;
-    [SerializeField] AimWeapon aimWeapon;
+    [SerializeField] public AimWeapon aimWeapon;
     [SerializeField] protected string name;
     [SerializeField] protected float weaponCooldown = 0.15f;
     [SerializeField] public bool weaponOnCooldown;
@@ -18,8 +18,8 @@ public class Melee : MonoBehaviour
     [SerializeField] protected GameObject hitbox;
     [SerializeField] protected int damage;
     [SerializeField] protected bool spawnProjectile;
-    
 
+    public Color color;
     void Awake()
     {
         // Disable weapon slash initially until hit is triggered.
@@ -27,26 +27,26 @@ public class Melee : MonoBehaviour
         // Set animator to Parent Object's Animator Component.
         aimWeapon = gameObject.transform.root.GetComponent<AimWeapon>();
         //playerAimWeapon.setAnimation("isAttackingMelee");
+
+        color = gameObject.GetComponent<SpriteRenderer>().color;
     }
 
     private void Start()
     {
         if (aimWeapon != null)
-            aimWeapon.setAnimation("isAttackingMelee");
+            aimWeapon.setAnimation("KnifeSlash");
     }
 
 
     public void swing(Vector3 gunEndPointPosition, float angle, Vector3 aimDirection)
     {
+        owner = gameObject.transform.root.gameObject;
         // On weapon cooldown? No Swing.
         if (weaponOnCooldown)
             return;
 
         //swish.SetActive(true);  make this better first
         
-        aimWeapon.setWeaponAnimationStatus(1);
-
-
         StartCoroutine(waitWeaponSwing(gunEndPointPosition, angle, aimDirection));
 
         // Weapon cooldown in between shots
@@ -80,8 +80,11 @@ public class Melee : MonoBehaviour
         if (spawnProjectile)
             yield break;
 
+        aimWeapon.animator.SetBool("isAttackingMelee", true);
+
         yield return new WaitUntil(() => spawnProjectile == true);
         // Treating a melee attack as a stationary bullet.
+        
         GameObject hitbox = Instantiate(this.hitbox.gameObject, aimWeapon.aimGunEndPointTransform.position, Quaternion.Euler(new Vector3(0, 0, aimWeapon.angle)));
         
         // Cache this info soon
@@ -92,7 +95,9 @@ public class Melee : MonoBehaviour
     public IEnumerator waitWeaponCooldown()
     {
         weaponOnCooldown = true;
+        
         yield return new WaitForSeconds(weaponCooldown);
+        aimWeapon.animator.SetBool("isAttackingMelee", false);
         weaponOnCooldown = false;
     }
 

@@ -13,7 +13,7 @@ public class Ammo : MonoBehaviour
     [SerializeField] protected Bullet bullet;
     [SerializeField] protected int ammoCapacity = 60;
     [SerializeField] protected int magCapacity = 10;
-    [SerializeField] protected int ammoInMag;
+    [SerializeField] public int ammoInMag;
     [SerializeField] public bool isReloading;
     AimWeapon aimWeapon;
 
@@ -58,6 +58,7 @@ public class Ammo : MonoBehaviour
 
     public void startReload()
     {
+        
         // No ammo left? No reload.
         if (ammoCapacity <= 0)
             return;
@@ -66,6 +67,7 @@ public class Ammo : MonoBehaviour
         if (ammoInMag == magCapacity)
             return;
 
+        aimWeapon = gameObject.transform.root.GetComponent<AimWeapon>();
         aimWeapon.setWeaponAnimationStatus("isReloading", 1);
         StartCoroutine(reload());
     }

@@ -61,7 +61,8 @@ public class BruteScript : MonoBehaviour
         timer += Time.deltaTime;
 
         //if (timer >= 2.5f || optimal.dir == null || optimal.dir.Count == 0)
-        if (optimal.dir == null || optimal.dir.Count == 0)
+        //if (optimal.dir == null || optimal.dir.Count == 0)
+        if (optimal.dir == null || timer >= 2.0)
         {
             int playerx = Mathf.RoundToInt(player.transform.position.x);
             int playery = Mathf.RoundToInt(player.transform.position.y);

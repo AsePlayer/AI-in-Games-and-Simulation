@@ -1,1 +1,2 @@
-# CST-415
+# CST-415: AI in Games and Simulations Lecture & Lab
+The course introduces basic concepts of AI in the gaming context such as finite state machines, fuzzy logic, architectures, planning, and search. Students will work with implementations of common game AI algorithms for behaviors such as path finding, behavior selection, and learning. The laboratory reinforces and expands learning of principles introduced in the lecture. Hands-on activities focus on implementing algorithms for flocking, A* path finding, decision trees, and deterministic finite state machines. Prerequisites: MAT-345, and MAT-374, CST-320.
